@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <strings.h>
 #include <unistd.h>
 #include <string.h>
@@ -35,7 +36,13 @@ int main(void){
 
     char *msg = "Hello_Friend\n";
 
+
     send(remfd, msg, 14, 0);
+    struct sockaddr_in *sai = (struct sockaddr_in *)&rem_addr;
+    char rem_ip[INET_ADDRSTRLEN];
+    
+    printf("%s\n", inet_ntop(AF_INET, &sai->sin_addr, rem_ip, INET_ADDRSTRLEN));
+
     for (;;){
         int recv_len = 13;
         char recv_msg[recv_len];
@@ -45,6 +52,7 @@ int main(void){
         printf("%s", recv_msg);
     }
     close(sockfd);
+    freeaddrinfo(res);
 
     return 0;
 }
