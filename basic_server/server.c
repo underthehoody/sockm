@@ -1,3 +1,4 @@
+#include <poll.h>
 #include <arpa/inet.h>
 #include <strings.h>
 #include <unistd.h>
@@ -43,14 +44,29 @@ int main(void){
     
     printf("%s\n", inet_ntop(AF_INET, &sai->sin_addr, rem_ip, INET_ADDRSTRLEN));
 
-    for (;;){
+    struct pollfd pfds[1];
+    pfds[0].fd = remfd; // when there's data in remfd, it will set revent
+    pfds[0].events = POLLIN;
+    for(;;){
+        int poll_count = poll(pfds, 1, 1);
+        if (poll_count > 0){
+            if(pfds[0].revents & POLLIN){
+                printf("data found");
+
+
+
+            }
+        }
+    }
+
+    /*for (;;){
         int recv_len = 13;
         char recv_msg[recv_len];
         bzero(recv_msg, recv_len);
         recv(remfd, recv_msg, recv_len, 0);
 
         printf("%s", recv_msg);
-    }
+    }*/
     close(sockfd);
     freeaddrinfo(res);
 
